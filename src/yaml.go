@@ -1,9 +1,9 @@
 package src
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -53,7 +53,7 @@ func parse(filePath string) *Kustomization {
 	return &data
 }
 
-func Lint() {
+func Lint() error {
 	productionPaths := make([]string, 0)
 	productionFiles, _ := filepath.Glob("*/production/kustomization.yaml")
 	for _, f := range productionFiles {
@@ -78,8 +78,9 @@ func Lint() {
 		hasError = true
 	}
 	if hasError {
-		os.Exit(1)
+		return errors.New("error")
 	}
+	return nil
 }
 
 func validateProduction(paths []string) bool {
