@@ -1,0 +1,3 @@
+images:
+  - name: nginx
+    newTag: staging
