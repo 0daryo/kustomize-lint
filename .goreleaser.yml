@@ -1,6 +1,6 @@
 builds:
   - main: main.go
-    binary: ody
+    binary: kustomize-lint
     goos:
       - windows
       - darwin
