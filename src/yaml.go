@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/go-yaml/yaml"
@@ -51,9 +52,22 @@ func parseKustomize(filePath string) *Kustomization {
 	}
 	return &data
 }
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
 
 func Lint() error {
-	buf, err := ioutil.ReadFile("./kustomize-lint.yaml")
+	var buf []byte
+	var err error
+	if fileExists("kustomize-lint.yaml") {
+		buf, err = ioutil.ReadFile("./kustomize-lint.yaml")
+	} else {
+		buf, err = ioutil.ReadFile("./kustomize-lint-ex.yaml")
+	}
 	if err != nil {
 		fmt.Println(err)
 		return err
