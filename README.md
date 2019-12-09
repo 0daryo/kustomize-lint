@@ -28,12 +28,30 @@ If you use this lint, ci exit with code 1 when production or staging has mistake
 ```
 
 # note
+
 ## functions
+
 - if newTag section in production/kustomization.yaml is productionXX or latest
 - if newTag section in staging/kustomization.yaml is stagingXX or latest
 
 # usage
 
-1. `go get -u github.com/0daryo/kustomize-lint`
-2. write ```kustomize-lint.yaml``` following the rule in example.
+1. `go get -u github.com/0daryo/kustomize-lint` or get binary from [release page](https://github.com/0daryo/kustomize-lint/releases)
+2. write `kustomize-lint.yaml` following the rule in kustomize-lint-ex.yaml
+
+```
+files:
+  - file:
+    name: "*/production/kustomization.yaml"
+    sentences:
+    # words tag must have
+      - name: newTag
+        include:
+          - production
+          - latest
+      - name: name
+        include:
+          - production
+```
+
 3. run `kustomize-lint run` with a directory where target yamls are.
