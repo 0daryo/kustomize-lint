@@ -29,10 +29,10 @@ If you use this lint, ci exit with code 1 when production or staging has mistake
 
 # note
 
-## functions
+## supported tag in kustomization
 
-- if newTag section in production/kustomization.yaml is productionXX or latest
-- if newTag section in staging/kustomization.yaml is stagingXX or latest
+- image
+- newTag
 
 # usage
 
