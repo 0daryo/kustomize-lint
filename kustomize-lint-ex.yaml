@@ -1,0 +1,18 @@
+files:
+  - file:
+    name: "production/kustomization.yaml"
+    sentences:
+      - name: newTag
+        include:
+          - production
+          - latest
+      - name: name
+        include:
+          - production
+  - file:
+    name: "staging/kustomization.yaml"
+    sentences:
+      - name: newTag
+        include:
+          - staging
+          - latest

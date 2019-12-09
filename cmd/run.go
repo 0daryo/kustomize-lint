@@ -23,29 +23,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// lintCmd represents the lint command
-var lintCmd = &cobra.Command{
-	Use:   "lint",
-	Short: "check newTag in production and staging dir ",
-	Long:  `check newTag in production and staging dir`,
+// runCmd represents the run command
+var runCmd = &cobra.Command{
+	Use:   "run",
+	Short: "run lint",
+	Long:  `run lint`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := src.Lint(); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		fmt.Println("validated OK!")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(lintCmd)
+	rootCmd.AddCommand(runCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// lintCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// runCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// lintCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// runCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -33,5 +33,7 @@ If you use this lint, ci exit with code 1 when production or staging has mistake
 - if newTag section in staging/kustomization.yaml is stagingXX or latest
 
 # usage
-1. ``` go get -u github.com/0daryo/kustomize-lint```
-2. run `kustomize-lint lint` with a directory where target yamls are
+
+1. `go get -u github.com/0daryo/kustomize-lint`
+2.
+3. run `kustomize-lint run` with a directory where target yamls are

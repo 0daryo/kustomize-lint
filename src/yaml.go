@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/go-yaml/yaml"
 )
@@ -17,17 +17,17 @@ const (
 	LATEST            = "latest"
 )
 
-type Kustomization struct {
-	Images []Image
-	Bases  []string
+func ReadOnConfig(fileBuffer []byte) (Yaml, error) {
+	data := Yaml{}
+	err := yaml.Unmarshal(fileBuffer, &data)
+	if err != nil {
+		fmt.Println(err)
+		return data, err
+	}
+	return data, nil
 }
 
-type Image struct {
-	Name   string `yaml:"name"`
-	NewTag string `yaml:"newTag"`
-}
-
-func ReadOnStruct(fileBuffer []byte) (Kustomization, error) {
+func ReadOnKustomize(fileBuffer []byte) (Kustomization, error) {
 	data := Kustomization{}
 	err := yaml.Unmarshal(fileBuffer, &data)
 	if err != nil {
@@ -37,7 +37,7 @@ func ReadOnStruct(fileBuffer []byte) (Kustomization, error) {
 	return data, nil
 }
 
-func parse(filePath string) *Kustomization {
+func parseKustomize(filePath string) *Kustomization {
 	buf, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		fmt.Println(err)
@@ -45,64 +45,54 @@ func parse(filePath string) *Kustomization {
 	}
 
 	// []byte を []Test に変換します。
-	data, err := ReadOnStruct(buf)
+	data, err := ReadOnKustomize(buf)
 	if err != nil {
 		fmt.Println(err)
 		return nil
 	}
 	return &data
 }
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
 
 func Lint() error {
-	productionPaths := make([]string, 0)
-	productionFiles, _ := filepath.Glob("*/production/kustomization.yaml")
-	for _, f := range productionFiles {
-		if strings.HasSuffix(f, KUSTOMIZATIONFILE) {
-			productionPaths = append(productionPaths, f)
-		}
+	var buf []byte
+	var err error
+	if fileExists("kustomize-lint.yaml") {
+		buf, err = ioutil.ReadFile("./kustomize-lint.yaml")
+	} else {
+		buf, err = ioutil.ReadFile("./kustomize-lint-ex.yaml")
 	}
-	stagingPaths := make([]string, 0)
-	stagingFiles, _ := filepath.Glob("*/staging/kustomization.yaml")
-	for _, f := range stagingFiles {
-		if strings.HasSuffix(f, KUSTOMIZATIONFILE) {
-			stagingPaths = append(stagingPaths, f)
-		}
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	// []byte を []map[string]string に変換します。
+	conf, err := ReadOnConfig(buf)
+	if err != nil {
+		fmt.Println(err)
+		return err
 	}
 	var hasError bool
-	if !validateProduction(productionPaths) {
-		fmt.Println("invalid yaml in production")
-		hasError = true
-	}
-	if !validateStaging(stagingPaths) {
-		fmt.Println("invalid yaml in staging")
-		hasError = true
+	for _, file := range conf.Files {
+		relatedFiles, _ := filepath.Glob(fmt.Sprintf("*/%s", file.Name))
+		for _, rf := range relatedFiles {
+			kustomization := parseKustomize(rf)
+			for _, sentence := range file.Sentences {
+				if sentence.hasError(kustomization) {
+					hasError = true
+				}
+			}
+		}
 	}
 	if hasError {
-		return errors.New("error")
+		return errors.New("validation error")
 	}
 	return nil
-}
-
-func validateProduction(paths []string) bool {
-	for _, path := range paths {
-		data := parse(path)
-		for _, tag := range data.Images {
-			if !strings.Contains(tag.NewTag, PRODUCTION) && !strings.Contains(tag.NewTag, LATEST) {
-				return false
-			}
-		}
-	}
-	return true
-}
-
-func validateStaging(paths []string) bool {
-	for _, path := range paths {
-		data := parse(path)
-		for _, tag := range data.Images {
-			if !strings.Contains(tag.NewTag, STAGING) && !strings.Contains(tag.NewTag, LATEST) {
-				return false
-			}
-		}
-	}
-	return true
 }
