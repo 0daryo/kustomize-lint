@@ -1,6 +1,6 @@
 files:
   - file:
-    name: "production/kustomization.yaml"
+    name: "*/production/kustomization.yaml"
     sentences:
       - name: newTag
         include:
@@ -10,7 +10,7 @@ files:
         include:
           - production
   - file:
-    name: "staging/kustomization.yaml"
+    name: "*/staging/kustomization.yaml"
     sentences:
       - name: newTag
         include:

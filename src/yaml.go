@@ -81,7 +81,7 @@ func Lint() error {
 	}
 	var hasError bool
 	for _, file := range conf.Files {
-		relatedFiles, _ := filepath.Glob(fmt.Sprintf("*/%s", file.Name))
+		relatedFiles, _ := filepath.Glob(fmt.Sprintf("%s", file.Name))
 		for _, rf := range relatedFiles {
 			kustomization := parseKustomize(rf)
 			for _, sentence := range file.Sentences {
