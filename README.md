@@ -28,7 +28,9 @@ In this kind of architecture below, you have to check whether yamls in productio
 
 If you use this lint, ci exit with code 1 when production kustomization has wrong tag. for ex)
 
-```user/overlays/production/kustomization.yaml
+`user/overlays/production/kustomization.yaml`
+
+```
 images:
   - name: nginx-production
     # need to be productionXX, but is mistakenly staging
