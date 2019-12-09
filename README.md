@@ -4,7 +4,6 @@ This tool helps you to validate tag in ci
 Please post issues if you need more options
 
 In this kind of architecture below, you have to check whether yamls in production directory has sentences related to staging or development by code review.
-If you use this lint, ci exit with code 1 when production or staging has mistaken sentences.
 
 ```
 ├── user
@@ -25,6 +24,15 @@ If you use this lint, ci exit with code 1 when production or staging has mistake
 │           ├── deployment.yaml
 │           ├── kustomization.yaml
 │           ├── service.yaml
+```
+
+If you use this lint, ci exit with code 1 when production kustomization has wrong tag. for ex)
+
+```user/overlays/production/kustomization.yaml
+images:
+  - name: nginx-production
+    # need to be productionXX, but is mistakenly staging
+    newTag: staging
 ```
 
 # note
