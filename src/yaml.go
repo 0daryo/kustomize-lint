@@ -44,7 +44,6 @@ func parseKustomize(filePath string) *Kustomization {
 		return nil
 	}
 
-	// []byte を []Test に変換します。
 	data, err := ReadOnKustomize(buf)
 	if err != nil {
 		fmt.Println(err)
@@ -73,7 +72,6 @@ func Lint() error {
 		return err
 	}
 
-	// []byte を []map[string]string に変換します。
 	conf, err := ReadOnConfig(buf)
 	if err != nil {
 		fmt.Println(err)
