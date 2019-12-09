@@ -1,5 +1,0 @@
-images:
-  - name: nginx
-    newTag: latest
-  - name: nginx2
-    newTag: latest
