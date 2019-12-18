@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -59,17 +60,31 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
+func find(file string) (string, error) {
+	files := []string{file}
+	for _, file := range files {
+		_, err := os.Stat(file)
+		if err == nil {
+			return file, nil
+		}
+	}
+	return "", errors.New("config for tfnotify is not found at all")
+}
+
 func Lint() error {
 	var buf []byte
-	var err error
 	if fileExists("kustomize-lint.yaml") {
-		buf, err = ioutil.ReadFile("./kustomize-lint.yaml")
+		p, err := filepath.Abs("./kustomize-lint.yaml")
+		if err != nil {
+			log.Fatal(err)
+		}
+		buf, err = ioutil.ReadFile(p)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
 	} else {
-		buf, err = ioutil.ReadFile("./kustomize-lint-ex.yaml")
-	}
-	if err != nil {
-		fmt.Println(err)
-		return err
+		log.Fatal(errors.New("kustomize-lint.yaml is not set"))
 	}
 
 	conf, err := ReadOnConfig(buf)
